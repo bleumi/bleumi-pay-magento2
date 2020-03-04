@@ -1,0 +1,37 @@
+{
+  "name": "bleumi/bleumi-pay-magento2",
+  "type": "magento2-module",
+  "description": "Enable your Magento 2 store to accept cryptocurrency payments with Bleumi Pay.",
+  "version": "1.0.0",
+  "keywords": [
+    "bleumipay",
+    "magento",
+    "payment",
+    "payment-gateway",
+    "payment-processing",
+    "crypto-payments",
+    "accept-crypto-payments",
+    "ethereum",
+    "eth",
+    "er20-tokens",
+    "algorand"
+  ],
+  "homepage": "https://bleumi.pay.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Bleumi Pay",
+      "email": "support@bleumi.com",
+      "homepage": "https://bleumi.pay.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "bleumi/bleumi-pay-sdk-php": "1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "BleumiPay\\PaymentGateway\\": ""
+    }
+  }
+}

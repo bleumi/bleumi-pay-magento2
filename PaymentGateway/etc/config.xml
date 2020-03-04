@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2020 Bleumi Pay. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <bleumipaymethod>
+                <model>BleumiPay\PaymentGateway\Model\BleumiPayMethod</model>
+                <title>Bleumi Pay Crypto Payments for Magento 2</title>
+                <active>0</active>
+                <order_status>pending</order_status>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+            </bleumipaymethod>
+            <!-- payment-config -->
+        </payment>
+    </default>
+</config>

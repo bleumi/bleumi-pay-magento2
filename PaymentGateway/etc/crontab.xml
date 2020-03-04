@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="bleumipay_paymentgateway">
+        <job name="bleumi_pay_payment_cron" instance="BleumiPay\PaymentGateway\Cron\Payment" method="execute">
+            <schedule>0,15,30,45 * * * *</schedule>
+        </job>
+         <job name="bleumi_pay_order_cron" instance="BleumiPay\PaymentGateway\Cron\Order" method="execute">
+            <schedule>5,20,35,50 * * * *</schedule>
+        </job>
+        <job name="bleumi_pay_retry_cron" instance="BleumiPay\PaymentGateway\Cron\Retry" method="execute">
+            <schedule>10,25,40,55 * * * *</schedule>
+        </job>
+    </group>
+</config>

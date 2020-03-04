@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Bleumi. All rights reserved.
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+	<table name="sales_order" resource="default" engine="innodb">
+		<column xsi:type="text" name="bleumipay_addresses" nullable="true" comment="Wallet Addresses (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_payment_status" length="20" nullable="true" comment="Payment Status (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_txid" length="20" nullable="true" comment="Transaction ID (Bleumi Pay Operation)"/>
+		<column xsi:type="varchar" name="bleumipay_data_source" length="20" nullable="true" comment="Data Source (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_transient_error" length="20" nullable="true" comment="Transient Error Indicator"/>
+		<column xsi:type="varchar" name="bleumipay_transient_error_code" length="20" nullable="true" comment="Transient Error Code (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_transient_error_msg" length="254" nullable="true" comment="Transient Error Message (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_retry_action" length="254" nullable="true" comment="Transient Error Retry Action (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_transient_error_count" nullable="true" comment="Transient Error Retry Count (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_hard_error" length="20" nullable="true" comment="Hard Error Indicator (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_hard_error_code" length="20" nullable="true" comment="Hard Error Code (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_hard_error_msg" length="254" nullable="true" comment="Hard Error Message (Bleumi Pay)"/>
+		<column xsi:type="varchar" name="bleumipay_processing_completed" length="20" nullable="true" comment="Processing completed Indicator (Bleumi Pay)"/>
+	</table>
+	<table name="bleumi_pay_cron" resource="default" comment="Cron job parameters (Bleumi Pay)">
+		<column xsi:type="int" name="id" padding="10" identity="true" unsigned="true" nullable="false" comment="ID"/>
+		<column xsi:type="timestamp" name="payment_updated_at" nullable="true" comment="Payment Updated"/>
+		<column xsi:type="timestamp" name="order_updated_at" nullable="true" comment="Order Updated"/>
+		<constraint xsi:type="primary" referenceId="PRIMARY">
+			<column name="id"/>
+		</constraint>
+	</table>
+</schema>

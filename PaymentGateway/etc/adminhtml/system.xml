@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2020 Bleumi. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="bleumipaymethod" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+                <!-- <label>Bleumi Pay</label> -->
+                <label><![CDATA[<div class="logo-src"></div><div class="quick_line_text">Accept quick & secure cryptocurrency (including stablecoins) payments.</div>]]></label>
+                <fieldset_css>bleumipay payment_settings</fieldset_css>
+                <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+
+                <group id="configuration_details" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="4">
+                    <comment></comment>
+                    <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset\Hint</frontend_model>
+                </group>
+                <group id="settings" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Payment Settings</label>
+                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable Bleumi Pay</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/bleumipaymethod/active</config_path>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/bleumipaymethod/title</config_path>
+                    </field>
+                    <field id="order_status" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>New Order Status</label>
+					    <source_model>Magento\Sales\Model\Config\Source\Order\Status\NewStatus</source_model>
+                        <config_path>payment/bleumipaymethod/order_status</config_path>
+                    </field>
+                    <field id="api_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API KEY</label>
+                        <config_path>payment/bleumipaymethod/api_key</config_path>
+                        <comment><![CDATA[<span>You can view and manage your Bleumi Pay API keys from <a href="https://pay.bleumi.com/app/" target="_blank">https://pay.bleumi.com/app/</a></span>]]></comment>
+                    </field>
+                    <!-- <field id="webhook_url" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>CALLBACK URL</label>
+                        <comment><![CDATA[Paste above url in <a href="https://pay.bleumi.com/app/sandboxIntegration/" target="_blank">Integration Settings > Webhook</a> (Only https Webhook Url allowed) ]]></comment>
+                        <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
+                    </field> -->
+                    <!-- <field id="allowspecific" translate="label" type="allowspecific" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                    </field>
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="51" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <can_be_empty>1</can_be_empty>
+                    </field> -->
+                    <!-- <field id="instructions" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Instructions</label>
+                    </field> -->
+                    <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <frontend_class>validate-number</frontend_class>
+                    </field>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>
