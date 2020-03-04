@@ -77,7 +77,7 @@ class Index extends \Magento\Framework\App\Action\Action
         } else {
             $order->registerCancellation('Canceled due to errors')->save();
             $this->checkoutSession->restoreQuote();
-            throw new LocalizedException(__('Something went wrong while recieving Api Response'));
+            throw new LocalizedException(__('Something went wrong while receiving API Response'));
         }
     }
 }

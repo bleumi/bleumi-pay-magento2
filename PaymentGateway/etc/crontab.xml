@@ -2,13 +2,13 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="bleumipay_paymentgateway">
         <job name="bleumi_pay_payment_cron" instance="BleumiPay\PaymentGateway\Cron\Payment" method="execute">
-            <schedule>0,15,30,45 * * * *</schedule>
+            <schedule>0 1,4,7,10,13,16,19,22 * * *</schedule>
         </job>
          <job name="bleumi_pay_order_cron" instance="BleumiPay\PaymentGateway\Cron\Order" method="execute">
-            <schedule>5,20,35,50 * * * *</schedule>
+            <schedule>0 2,5,6,11,14,17,20,23 * * *</schedule>
         </job>
         <job name="bleumi_pay_retry_cron" instance="BleumiPay\PaymentGateway\Cron\Retry" method="execute">
-            <schedule>10,25,40,55 * * * *</schedule>
+            <schedule>0 3,6,7,12,15,18,21,0 * * *</schedule>
         </job>
     </group>
 </config>

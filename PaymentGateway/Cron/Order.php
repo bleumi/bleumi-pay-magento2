@@ -148,10 +148,10 @@ class Order
                 $success = Utils::markAsMultiTokenPayment($entity_id);
                 if ($success) {
                     $msg = $result[0]['message'];
-                    $this->logger->info("bleumi_pay: '. $data_source .' : syncOrder : order-id:  '. $entity_id .' " . $msg . "', order status changed to 'multi_token_payment");
+                    $this->logger->info("bleumi_pay: '. $data_source .' : syncOrder : order-id: '. $entity_id .' " . $msg . "', order status changed to 'multi_token_payment");
                 }
             } else {
-                $this->logger->critical('bleumi_pay: ' . $data_source . ' : syncOrder:' . $entity_id . ' token balance error : ' . $result[0]['message']);
+                $this->logger->critical('bleumi_pay: ' . $data_source . ' : syncOrder: order-id: ' . $entity_id . ' token balance error : ' . $result[0]['message']);
             }
             return;
         }

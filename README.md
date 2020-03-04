@@ -26,7 +26,7 @@ For more details please refer the following links
 
 To use this plugin with your Magento 2 store you will need:
 
-* [Magento](https://magento.com/) (tested from 2.0.2, tested up to 2.3.3)
+* [Magento](https://magento.com/) (tested from 2.0.2, tested up to 2.3.4)
 
 If you want to know if Bleumi Pay supports your system or if you face any integration problem, please reach us at support@bleumi.com
 

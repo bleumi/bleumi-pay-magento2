@@ -39,23 +39,6 @@
                         <config_path>payment/bleumipaymethod/api_key</config_path>
                         <comment><![CDATA[<span>You can view and manage your Bleumi Pay API keys from <a href="https://pay.bleumi.com/app/" target="_blank">https://pay.bleumi.com/app/</a></span>]]></comment>
                     </field>
-                    <!-- <field id="webhook_url" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>CALLBACK URL</label>
-                        <comment><![CDATA[Paste above url in <a href="https://pay.bleumi.com/app/sandboxIntegration/" target="_blank">Integration Settings > Webhook</a> (Only https Webhook Url allowed) ]]></comment>
-                        <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Form\Field\Disable</frontend_model>
-                    </field> -->
-                    <!-- <field id="allowspecific" translate="label" type="allowspecific" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Payment from Applicable Countries</label>
-                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
-                    </field>
-                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="51" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Payment from Specific Countries</label>
-                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                        <can_be_empty>1</can_be_empty>
-                    </field> -->
-                    <!-- <field id="instructions" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Instructions</label>
-                    </field> -->
                     <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Sort Order</label>
                         <frontend_class>validate-number</frontend_class>

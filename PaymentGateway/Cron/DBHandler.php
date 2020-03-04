@@ -13,7 +13,7 @@ use \Magento\Sales\Model\Order;
 class DBHandler
 {
 
-    const cron_collision_safe_minutes = 0.1;
+    const cron_collision_safe_minutes = 10;
 
     const await_payment_minutes = 24 * 60;
 
