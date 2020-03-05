@@ -157,11 +157,14 @@ class DBHandler
      * Helper function - creates and executes the UPDATE statement for a string columns of any table
      */
 
-    public function updateStringData($table_name, $entity_id, $column_name, $column_value)
+    public function updateStringData($table_name, $entity_id, $column_name, $column_value = null)
     {
         $table_name = $this->resource->getTableName($table_name);
-        if (!empty($entity_id) && !empty($column_value)) {
-            $sql = " UPDATE " . $table_name . " SET " . $column_name . " = '" . $column_value . "'  WHERE entity_id = " . $entity_id;
+        if (!empty($entity_id)) {
+            $sql = $sql = "UPDATE " . $table_name . " SET " . $column_name . " = null WHERE entity_id = " . $entity_id;
+            if (!empty($column_value)) {
+                $sql = "UPDATE " . $table_name . " SET " . $column_name . " = '" . $column_value . "'  WHERE entity_id = " . $entity_id;
+            } 
             $this->connection->query($sql);
         }
     }
@@ -173,7 +176,7 @@ class DBHandler
 
     public function deleteMetaData($entity_id, $column_name)
     {
-        return $this->updateStringData('sales_order', $entity_id, $column_name, '');
+        return $this->updateStringData('sales_order', $entity_id, $column_name);
     }
 
     public function getMeta($entity_id, $column_name)

@@ -2,12 +2,13 @@
 
 /**
  * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * 
  */
 
 namespace BleumiPay\PaymentGateway\Cron;
 
 use Psr\Log\LoggerInterface;
+use Magento\Framework\App\ObjectManager;
 use \BleumiPay\PaymentGateway\Cron\ExceptionHandler;
 
 class APIHandler
@@ -15,10 +16,6 @@ class APIHandler
     private $logger;
     protected $payment_instance;
     protected $HC_instance;
-
-    /**
-     * @var \Bleumi\Pay\Model\Chain
-     */
     protected $error_handler;
     protected $store;
 
@@ -167,12 +164,17 @@ class APIHandler
     /**
      * List Tokens
      */
-    public function list_tokens()
+    public function list_tokens($storeCurrency)
     {
-        $result = null;
+        $result = array();
         $errorStatus = array();
         try {
-            $result = $this->HC_instance->listTokens();
+            $tokens = $this->HC_instance->listTokens();
+            foreach ($tokens as $item) {
+                if ($item['currency'] === $storeCurrency) {
+                    array_push($result, $item);
+                }
+            }    
         } catch (\Exception $e) {
             $msg = 'list_tokens: failed, response: ' . $id . '; response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
@@ -381,8 +383,9 @@ class APIHandler
             $errorStatus['message'] = $msg;
             return array($errorStatus, $payment_info);
         }
-
-        $result = $this->list_tokens();
+        $order = ObjectManager::getInstance()->create('Magento\Sales\Model\Order')->load($entity_id);
+        $storeCurrency = $order->getStoreCurrencyCode();
+        $result = $this->list_tokens($storeCurrency);
         if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
             $this->logger->critical('bleumi_pay: getPaymentTokenBalance: order-id :' . $entity_id . ' list_tokens api failed : ' . $result[0]['message']);
             return array($result[0], $payment_info);
