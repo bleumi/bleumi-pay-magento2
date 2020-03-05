@@ -32,6 +32,9 @@
   "autoload": {
     "psr-4": {
       "BleumiPay\\PaymentGateway\\": ""
-    }
+    },
+    "files": [
+        "registration.php"
+    ]
   }
 }
