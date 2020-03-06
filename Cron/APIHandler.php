@@ -176,7 +176,7 @@ class APIHandler
                 }
             }    
         } catch (\Exception $e) {
-            $msg = 'list_tokens: failed, response: ' . $id . '; response: ' . $e->getMessage();
+            $msg = 'list_tokens: failed for currency: ' . $storeCurrency . '; response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();

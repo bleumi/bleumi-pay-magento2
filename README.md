@@ -1,4 +1,4 @@
-<img src="./PaymentGateway/view/frontend/web/images/BleumiPay.png" height="30">
+<img src="./view/frontend/web/images/BleumiPay.png" height="30">
 
 # Bleumi Pay for Magento 2
 
