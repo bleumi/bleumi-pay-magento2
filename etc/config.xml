@@ -9,7 +9,7 @@
         <payment>
             <bleumipaymethod>
                 <model>BleumiPay\PaymentGateway\Model\BleumiPayMethod</model>
-                <title>Bleumi Pay Crypto Payments for Magento 2</title>
+                <title>Bleumi Pay Digital Currency Payments for Magento 2</title>
                 <active>0</active>
                 <order_status>pending</order_status>
                 <allowspecific>0</allowspecific>

@@ -39,7 +39,7 @@ Recommended USD Stablecoins
 * Single Collateral DAI (DAI)
 * Gemini Dollar (GUSD)
 
-Recommended USD Stablecoins
+Recommended other fiat money Stablecoins
 * Stasis EURO (EURS)
 * CryptoFranc (XCHF)
 * 1SG (1SG)
@@ -70,7 +70,7 @@ Step 1: Configure your Bleumi Pay Account:
 
 Step 2: Install & Configure Bleumi Pay Magento 2 Plugin on your Magento 2 Store.
 
-Please refer to the [Bleumi Pay Magento 2 Installation Guide](BP_Magento2_Plugin.pdf) for complete details. 
+Please refer to the [Bleumi Pay Magento 2 Installation Guide](BP_Magento2_Plugin.pdf) for complete details.
 
 ## License
 

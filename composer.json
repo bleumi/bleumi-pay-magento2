@@ -1,8 +1,8 @@
 {
   "name": "bleumi/bleumi-pay-magento2",
   "type": "magento2-module",
-  "description": "Enable your Magento 2 store to accept cryptocurrency payments with Bleumi Pay.",
-  "version": "1.0.4",
+  "description": "Enable your Magento 2 store to accept digital currency payments with Bleumi Pay.",
+  "version": "1.0.5",
   "keywords": [
     "bleumipay",
     "magento",
