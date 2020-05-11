@@ -10,7 +10,7 @@
         <section id="payment">
             <group id="bleumipaymethod" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
                 <!-- <label>Bleumi Pay</label> -->
-                <label><![CDATA[<div class="logo-src"></div><div class="quick_line_text">Accept quick & secure cryptocurrency (including stablecoins) payments.</div>]]></label>
+                <label><![CDATA[<div class="logo-src"></div><div class="quick_line_text">Accept digital currency payments (like Tether USD, USD Coin, Stasis EURO, CryptoFranc).</div>]]></label>
                 <fieldset_css>bleumipay payment_settings</fieldset_css>
                 <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
 
