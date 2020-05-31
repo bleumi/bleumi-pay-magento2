@@ -1,7 +1,16 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © Bleumi. All rights reserved.
+ * DBSchema
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">

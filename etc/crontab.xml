@@ -1,13 +1,27 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * CronTab
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
-    <group id="bleumipay_paymentgateway">
-        <job name="bleumi_pay_payment_cron" instance="BleumiPay\PaymentGateway\Cron\Payment" method="execute">
+    <group id="bleumi_bleumipay">
+        <job name="bleumi_pay_payment_cron" instance="Bleumi\BleumiPay\Cron\Payment" method="execute">
             <schedule>0 1,4,7,10,13,16,19,22 * * *</schedule>
         </job>
-         <job name="bleumi_pay_order_cron" instance="BleumiPay\PaymentGateway\Cron\Order" method="execute">
+         <job name="bleumi_pay_order_cron" instance="Bleumi\BleumiPay\Cron\Order" method="execute">
             <schedule>0 2,5,6,11,14,17,20,23 * * *</schedule>
         </job>
-        <job name="bleumi_pay_retry_cron" instance="BleumiPay\PaymentGateway\Cron\Retry" method="execute">
+        <job name="bleumi_pay_retry_cron" instance="Bleumi\BleumiPay\Cron\Retry" method="execute">
             <schedule>0 3,6,7,12,15,18,21,0 * * *</schedule>
         </job>
     </group>

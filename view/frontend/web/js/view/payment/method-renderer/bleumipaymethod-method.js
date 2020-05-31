@@ -1,6 +1,14 @@
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Payment Method Renderer JS
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 /*browser:true*/
 /*global define*/
@@ -16,41 +24,51 @@ define(
     function ($, Component, url, customerData, errorProcessor) {
         'use strict';
 
-        return Component.extend({
-            redirectAfterPlaceOrder: false,
-            defaults: {
-                template: 'BleumiPay_PaymentGateway/payment/bleumipaymethod'
-            },
+        return Component.extend(
+            {
+                redirectAfterPlaceOrder: false,
+                defaults: {
+                    template: 'Bleumi_BleumiPay/payment/bleumipaymethod'
+                },
 
-            /** Returns send check to info */
-            getMailingAddress: function () {
-                return window.checkoutConfig.payment.checkmo.mailingAddress;
-            },
-            afterPlaceOrder: function () {
-                var body = $('body').loader();
-                try {
-                    body.loader('show');
-                    var custom_controller_url = url.build('bleumipay/start/index'); //your custom controller url
-                    $.post(custom_controller_url, 'json')
-                        .done(function (response) {
-                            // customerData.invalidate(['cart']);
-                            window.location.href = response.redirectUrl;
-                        })
-                        .fail(function (response) {
-                            errorProcessor.process(response, this.messageContainer);
-                        })
-                        .always(function () {
-                            // fullScreenLoader.stopLoader();
-                            body.loader('destroy');
-                        });
-                } catch (error) {
-                    window.console.error(error)
-                    window.console.log(error)
+                /**
+                 * Returns send check to info 
+                 */
+                getMailingAddress: function () {
+                    return window.checkoutConfig.payment.checkmo.mailingAddress;
+                },
+                afterPlaceOrder: function () {
+                    var body = $('body').loader();
+                    try {
+                        body.loader('show');
+                        var custom_controller_url = url.build('bleumipay/start/index'); //your custom controller url
+                        $.post(custom_controller_url, 'json')
+                            .done(
+                                function (response) {
+                                    // customerData.invalidate(['cart']);
+                                    window.location.href = response.redirectUrl;
+                                }
+                            )
+                            .fail(
+                                function (response) {
+                                    errorProcessor.process(response, this.messageContainer);
+                                }
+                            )
+                            .always(
+                                function () {
+                                    // fullScreenLoader.stopLoader();
+                                    body.loader('destroy');
+                                }
+                            );
+                    } catch (error) {
+                        window.console.error(error)
+                        window.console.log(error)
+                    }
+                },
+                getLogo: function () {
+                    return require.toUrl('Bleumi_BleumiPay/images/BleumiPay.png');
                 }
-            },
-            getLogo: function () {
-                return require.toUrl('BleumiPay_PaymentGateway/images/BleumiPay.png');
             }
-        });
+        );
     }
 );

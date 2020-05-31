@@ -2,19 +2,20 @@
   "name": "bleumi/bleumi-pay-magento2",
   "type": "magento2-module",
   "description": "Enable your Magento 2 store to accept digital currency payments with Bleumi Pay.",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "keywords": [
     "bleumipay",
     "magento",
     "payment",
     "payment-gateway",
     "payment-processing",
-    "crypto-payments",
-    "accept-crypto-payments",
+    "digital-currency-payments",
+    "accept-digital-currency-payments",
     "ethereum",
     "eth",
     "erc20-tokens",
-    "algorand"
+    "algorand",
+    "rsk"
   ],
   "homepage": "https://bleumi.pay.com",
   "license": "MIT",
@@ -27,11 +28,11 @@
     }
   ],
   "require": {
-    "bleumi/bleumi-pay-sdk-php": "^1.0.21"
+    "bleumi/bleumi-pay-sdk-php": "^1.0.22"
   },
   "autoload": {
     "psr-4": {
-      "BleumiPay\\PaymentGateway\\": ""
+      "Bleumi\\BleumiPay\\": ""
     },
     "files": [
         "registration.php"

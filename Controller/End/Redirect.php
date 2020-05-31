@@ -1,34 +1,54 @@
 <?php
 
-namespace BleumiPay\PaymentGateway\Controller\End;
+/**
+ * Redirect
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
+
+namespace Bleumi\BleumiPay\Controller\End;
 
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Model\ScopeInterface;
-use BleumiPay\PaymentGateway\Cron\APIHandler;
+use Bleumi\BleumiPay\Cron\APIHandler;
+
+/**
+ * Redirect
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
 
 class Redirect extends \Magento\Framework\App\Action\Action
 {
-    /**
-     * @var PageFactory
-     */
-    private $resultPageFactory;
-
-    /**
-     * @var \Magento\Sales\Model\OrderFactory;
-     */
+    protected $resultPageFactory;
     protected $orderFactory;
+    protected $scopeConfig;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * Constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context              $context           Context.                                                          
+     * @param \Magento\Framework\View\Result\PageFactory         $resultPageFactory Result Page Factory.
+     * @param \Magento\Sales\Model\OrderFactory                  $orderFactory      Order Factory.
+     * @param \Psr\Log\LoggerInterface                           $logger            Log writer.
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig       Scope Config.
+     *
+     * @return void
      */
-    private $scopeConfig;
-
-    /**
-     * Index constructor.
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Psr\Log\LoggerInterface $logger
-     */
-
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
@@ -43,14 +63,15 @@ class Redirect extends \Magento\Framework\App\Action\Action
         parent::__construct($context);
     }
 
+    /**
+     * Get Checkout
+     *
+     * @return \Magento\Checkout\Model\Session      Session.
+     */
     protected function _getCheckout()
     {
         return $this->_objectManager->get('Magento\Checkout\Model\Session');
     }
-
-    /**
-     * @return \Magento\Checkout\Model\Session
-     */
 
     /**
      * Redirect to to checkout success
@@ -62,15 +83,14 @@ class Redirect extends \Magento\Framework\App\Action\Action
         $api = new APIHandler($this->scopeConfig->getValue('payment/bleumipaymethod/api_key', ScopeInterface::SCOPE_STORE),   $this->logger);
         $order_id = $this->_getCheckout()->getLastRealOrderId();
         try {
-            if ($order_id && $order_id == $_GET["id"]) {
+            if ($order_id && $order_id == filter_input(INPUT_GET, 'id')) {
                 $this->_redirect('checkout/onepage/success', ['_secure' => true]);
                 $params = array(
-                    "hmac_alg" => $_GET["hmac_alg"],
-                    "hmac_input" => base64_decode($_GET["hmac_input"]),
-                    "hmac_keyId" => $_GET["hmac_keyId"],
-                    "hmac_value" => $_GET["hmac_value"],
+                    "hmac_alg" => filter_input(INPUT_GET, 'hmac_alg'),
+                    "hmac_input" => base64_decode(filter_input(INPUT_GET, 'hmac_input')),
+                    "hmac_keyId" => filter_input(INPUT_GET, 'hmac_keyId'),
+                    "hmac_value" => filter_input(INPUT_GET, 'hmac_value'),
                 );
-                // $this->_eventManager->dispatch('create_invoice_for_bleumi_pay', ['params' => $params]);
                 $order = $this->orderFactory->create()->loadByIncrementId($order_id);
                 $isValid = $api->validateUrl($params);
 
@@ -81,7 +101,7 @@ class Redirect extends \Magento\Framework\App\Action\Action
                     $this->logger->critical('Bleumi Pay payment validation failed hence status not changed', ["exception" => json_encode($order)]);
                 }
             } else {
-                $this->logger->critical('Bleumi Pay payment validation failed' . $order_id . "||" . $_GET["id"], ["exception" => json_encode($order)]);
+                $this->logger->critical('Bleumi Pay payment validation failed' . $order_id . "||" . filter_input(INPUT_GET, 'id'), ["exception" => json_encode($order)]);
                 $this->_redirect('checkout/cart');
             }
             $resultPage = $this->resultPageFactory->create();

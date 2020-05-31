@@ -1,11 +1,19 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
- **/
+ * InstallData
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
 
-namespace BleumiPay\PaymentGateway\Setup;
+namespace Bleumi\BleumiPay\Setup;
 
 use Exception;
 use Magento\Framework\Exception\AlreadyExistsException;
@@ -19,9 +27,22 @@ use Magento\Sales\Model\ResourceModel\Order\Status as StatusResource;
 use Magento\Sales\Model\ResourceModel\Order\StatusFactory as StatusResourceFactory;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * InstallData 
+ *
+ * PHP version 5
+ *
+ * @category  Class
+ * @package   BleumiPay\Setup
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
+
 class InstallData implements InstallDataInterface
 {
-    private $storeManagerInterface;
+    protected $storeManagerInterface;
 
     /**
      * Custom Order-State code
@@ -61,8 +82,9 @@ class InstallData implements InstallDataInterface
     /**
      * InstallData constructor
      *
-     * @param StatusFactory $statusFactory
-     * @param StatusResourceFactory $statusResourceFactory
+     * @param StatusFactory         $statusFactory         Status Factory
+     * @param StatusResourceFactory $statusResourceFactory Status Resource Factory
+     * @param StoreManagerInterface $storeManager          Store Manager
      */
     public function __construct(
         StatusFactory $statusFactory,
@@ -74,8 +96,13 @@ class InstallData implements InstallDataInterface
         $this->statusResourceFactory = $statusResourceFactory;
     }
     /**
-     * {@inheritdoc}
-     **/
+     * InstallData install
+     *
+     * @param ModuleDataSetupInterface $setup   Setup
+     * @param ModuleContextInterface   $context Context
+     * 
+     * @return void
+     */
     public function install(
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
@@ -100,32 +127,60 @@ class InstallData implements InstallDataInterface
      */
     protected function addNewOrderStateAndStatus()
     {
-        /** @var StatusResource $statusResource */
+        /**
+         * Status Resource
+         * 
+         * @var StatusResource 
+         */
         $statusResource = $this->statusResourceFactory->create();
-        $this->addItem($statusResource,
+        $this->addItem(
+            $statusResource,
             self::ORDER_STATE_AWAITING_CONFIRMATION_CODE,
             self::ORDER_STATUS_AWAITING_CONFIRMATION_CODE,
-            self::ORDER_STATUS_AWAITING_CONFIRMATION_LABEL);
+            self::ORDER_STATUS_AWAITING_CONFIRMATION_LABEL
+        );
 
-        $this->addItem($statusResource,
+        $this->addItem(
+            $statusResource,
             self::ORDER_STATE_PAYMENT_FAILED_CODE,
             self::ORDER_STATUS_PAYMENT_FAILED_CODE,
-            self::ORDER_STATUS_PAYMENT_FAILED_LABEL);
+            self::ORDER_STATUS_PAYMENT_FAILED_LABEL
+        );
 
-        $this->addItem($statusResource,
+        $this->addItem(
+            $statusResource,
             self::ORDER_STATE_PAYMENT_MULTITOKEN_CODE,
             self::ORDER_STATUS_PAYMENT_MULTITOKEN_CODE,
-            self::ORDER_STATUS_PAYMENT_MULTITOKEN_LABEL);
+            self::ORDER_STATUS_PAYMENT_MULTITOKEN_LABEL
+        );
     }
 
+    /**
+     * Create new custom order status and assign it to the new custom order state
+     *
+     * @param $statusResource Status Resource
+     * @param $stateCode      State Code
+     * @param $statusCode     Status Code
+     * @param $statusLabel    Status Label
+     * 
+     * @return void
+     *
+     * @throws Exception
+     */
     protected function addItem($statusResource, $stateCode, $statusCode, $statusLabel)
     {
-        /** @var Status $status */
+        /**
+         * Status
+         * 
+         * @var Status 
+         */
         $status = $this->statusFactory->create();
-        $status->setData([
-            'status' => $statusCode,
-            'label' => $statusLabel,
-        ]);
+        $status->setData(
+            [
+                'status' => $statusCode,
+                'label' => $statusLabel,
+            ]
+        );
 
         try {
             $statusResource->save($status);
@@ -134,5 +189,4 @@ class InstallData implements InstallDataInterface
         }
         $status->assignState($stateCode, true, true);
     }
-
 }

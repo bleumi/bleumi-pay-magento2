@@ -1,33 +1,45 @@
 <?php
 
-/*****************************************
- *
- * Bleumi Pay Payments CRON ("Payments Processor") functions
- *
- * Check statuses/payment received in Bleumi Pay and update Orders.
- *
- * All payments received after the last time this job run are applied to the orders
- *
- ******************************************/
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
+ * Payment File Doc Comment
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Cron;
+
+namespace Bleumi\BleumiPay\Cron;
 
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
-use \BleumiPay\PaymentGateway\Cron\APIHandler;
-use \BleumiPay\PaymentGateway\Cron\DBHandler;
+use \Bleumi\BleumiPay\Cron\APIHandler;
+use \Bleumi\BleumiPay\Cron\DBHandler;
+
+/**
+ * Payment Class Doc Comment
+ *
+ * ("Payments Processor") functions
+ * Check payment received in Bleumi Pay and update Orders.
+ * All payments received after the last time of this job run are applied to the orders
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
 
 class Payment
 {
     protected $logger;
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    private $scopeConfig;
+    protected $scopeConfig;
     protected $store;
     protected $api;
     protected $payments;
@@ -35,6 +47,14 @@ class Payment
     protected $tokens;
     protected $error_handler;
 
+    /**
+     * Constructor
+     *
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig scope Config.
+     * @param LoggerInterface                                    $logger      Log writer
+     *
+     * @return void
+     */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         LoggerInterface $logger
@@ -49,11 +69,10 @@ class Payment
     }
 
     /**
+     * Payments cron main function
      *
-     * Payments cron
-     *
+     * @return void
      */
-
     public function execute()
     {
         $data_source = 'payments-cron';
@@ -63,9 +82,9 @@ class Payment
         $next_token = '';
         $updated_at = 0;
         do {
-            $result = $this->api->get_payments($start_at, $next_token);
+            $result = $this->api->getPayments($start_at, $next_token);
             if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
-                $this->logger->critical('bleumi_pay:' . $data_source . ' : get_payments api request failed. ' . $result[0]['message'] . ' exiting payments-cron.');
+                $this->logger->critical('bleumi_pay:' . $data_source . ' : getPayments api request failed. ' . $result[0]['message'] . ' exiting payments-cron.');
                 return $result[0];
             }
             $payments = $result[1]['results'];
@@ -80,7 +99,6 @@ class Payment
             try {
                 $next_token = $result[1]['next_token'];
             } catch (\Exception $e) {
-
             }
             if (is_null($next_token)) {
                 $next_token = '';
@@ -91,7 +109,6 @@ class Payment
                 $this->logger->info('bleumi_pay: ' . $data_source . ' : processing payment : ' . $payment['id'] . ' ' . date('Y-m-d H:i:s', $updated_at));
                 $this->syncPayment($payment, $data_source);
             }
-
         } while ($next_token !== '');
 
         if ($updated_at > 0) {
@@ -101,6 +118,14 @@ class Payment
         }
     }
 
+    /**
+     * Sync Payment.
+     *
+     * @param $payment     Payment to process.
+     * @param $data_source Cron job identifier.
+     *
+     * @return void
+     */
     public function syncPayment($payment, $data_source)
     {
         $order = $this->store->getPendingOrder($payment["id"]);
@@ -108,10 +133,8 @@ class Payment
         try {
             $entity_id = $order[0]["entity_id"];
         } catch (\Exception $e) {
-
         }
         if (!empty($entity_id)) {
-
             $bp_hard_error = $this->store->getMeta($entity_id, 'bleumipay_hard_error');
             // If there is a hard error (or) transient error action does not match, return
             $bp_transient_error = $this->store->getMeta($entity_id, 'bleumipay_transient_error');
@@ -145,7 +168,7 @@ class Payment
             $currentTime = strtotime(date("Y-m-d H:i:s")); //server unix time
             $date_modified = strtotime($order[0]['updated_at']);
             $minutes = Utils::getMinutesDiff($currentTime, $date_modified);
-            if ($minutes < $this->store::cron_collision_safe_minutes) {
+            if ($minutes < $this->store::CRON_COLLISION_SAFE_MINUTES) {
                 if (($data_source === 'payments-cron') && ($bp_data_source === 'orders-cron')) {
                     $msg = __('syncPayment:' . $entity_id . ' skipping payment processing at this time as Orders_CRON processed this order recently, will be processing again later', 'bleumipay');
                     $this->error_handler->logTransientException($entity_id, 'syncPayment', 'E102', $msg);
@@ -157,7 +180,7 @@ class Payment
             $this->logger->info('bleumi_pay: $addresses ' . $addresses);
             $this->store->updateMetaData($entity_id, 'bleumipay_addresses', $addresses);
             //Get token balance
-            $result = $this->api->getPaymentTokenBalance($payment, $entity_id);
+            $result = $this->api->getPaymentTokenBalance($entity_id, $payment);
             if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
                 if ($result[0]['code'] == -2) {
                     $success = Utils::markAsMultiTokenPayment($entity_id);
@@ -175,7 +198,6 @@ class Payment
             try {
                 $amount = (float) $payment_info['token_balances'][0]['balance'];
             } catch (\Exception $e) {
-
             }
 
             $order_value = (float) $order[0]["grand_total"];
@@ -190,5 +212,4 @@ class Payment
             }
         }
     }
-
 }

@@ -1,14 +1,22 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Routes
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
 		<route id="bleumipay" frontName="bleumipay">
-            <module name="BleumiPay_PaymentGateway" />
+            <module name="Bleumi_BleumiPay" />
         </route>
     </router>
 </config>

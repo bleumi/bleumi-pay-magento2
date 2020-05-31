@@ -1,8 +1,16 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Payment
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 -->
 <payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

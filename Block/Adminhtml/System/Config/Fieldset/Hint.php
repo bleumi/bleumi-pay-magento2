@@ -1,25 +1,45 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Hint
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset;
+namespace Bleumi\BleumiPay\Block\Adminhtml\System\Config\Fieldset;
 
 use Magento\Backend\Block\Template;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
 
 /**
- * Class Hint adds "Configuration Details" link to payment configuration.
- * `<comment>` node must be defined in `<group>` node.
+ * Hint
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
+
 class Hint extends Template implements RendererInterface
 {
 
     /**
-     * @param AbstractElement $element
+     * Render method
+     *
+     * @param AbstractElement $element      Abstract Element.
+     *
      * @return string
      */
     public function render(AbstractElement $element)

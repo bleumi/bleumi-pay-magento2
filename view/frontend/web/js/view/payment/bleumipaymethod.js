@@ -1,6 +1,14 @@
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Payment Method JS
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 /*browser:true*/
 /*global define*/
@@ -17,10 +25,12 @@ define(
         rendererList.push(
             {
                 type: 'bleumipaymethod',
-                component: 'BleumiPay_PaymentGateway/js/view/payment/method-renderer/bleumipaymethod-method'
+                component: 'Bleumi_BleumiPay/js/view/payment/method-renderer/bleumipaymethod-method'
             }
         );
-        /** Add view logic here if needed */
+        /**
+    * Add view logic here if needed 
+    */
         return Component.extend({});
     }
 );

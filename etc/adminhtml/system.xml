@@ -1,8 +1,16 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2020 Bleumi. All rights reserved.
- * See COPYING.txt for license details.
+ * System
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
@@ -12,11 +20,11 @@
                 <!-- <label>Bleumi Pay</label> -->
                 <label><![CDATA[<div class="logo-src"></div><div class="quick_line_text">Accept digital currency payments (like Tether USD, USD Coin, Stasis EURO, CryptoFranc).</div>]]></label>
                 <fieldset_css>bleumipay payment_settings</fieldset_css>
-                <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+                <frontend_model>Bleumi\BleumiPay\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
 
                 <group id="configuration_details" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="4">
                     <comment></comment>
-                    <frontend_model>BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset\Hint</frontend_model>
+                    <frontend_model>Bleumi\BleumiPay\Block\Adminhtml\System\Config\Fieldset\Hint</frontend_model>
                 </group>
                 <group id="settings" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Payment Settings</label>

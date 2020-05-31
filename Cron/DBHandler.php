@@ -1,30 +1,59 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
+ * DBHandler
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Cron;
+namespace Bleumi\BleumiPay\Cron;
 
 use Magento\Framework\App\ObjectManager;
 use Psr\Log\LoggerInterface;
 use \Magento\Sales\Model\Order;
 
+/**
+ * DBHandler 
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
+
 class DBHandler
 {
 
-    const cron_collision_safe_minutes = 10;
+    const CRON_COLLISION_SAFE_MINUTES = 10;
 
-    const await_payment_minutes = 24 * 60;
+    const AWAIT_PAYMENT_MINUTES = 24 * 60;
 
-    private $objectManager;
-    private $resource;
-    private $connection;
+    protected $objectManager;
+    protected $resource;
+    protected $connection;
     protected $logger;
     protected $sales_order;
     protected $sales_order_payment;
     protected $bleumi_pay_cron;
 
+    /**
+     * Constructor
+     *
+     * @param LoggerInterface $logger Log writer
+     *
+     * @return object
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->objectManager = ObjectManager::getInstance();
@@ -37,9 +66,13 @@ class DBHandler
     }
 
     /**
-     * Get the (Pending/Awaiting confirmation/Multi Token Payment) order for the entity_id.
+     * Get the (Pending/Awaiting confirmation/Multi Token Payment)
+     * order for the entity_id.
+     *
+     * @param $entity_id Order ID to get the details
+     *
+     * @return object
      */
-
     public function getPendingOrder($entity_id)
     {
         $sql = "SELECT * FROM " . $this->sales_order . " WHERE entity_id = " . $entity_id . " AND status IN ('pending', 'awaiting_confirmation', 'multi_token_payment')";
@@ -56,8 +89,9 @@ class DBHandler
     /**
      * Get all orders with transient errors.
      * Used by Retry cron to reprocess such orders
+     *
+     * @return array
      */
-
     public function getTransientErrorOrders()
     {
 
@@ -65,8 +99,8 @@ class DBHandler
                 SELECT
                     s.*
                 FROM " .
-        $this->sales_order . " s, " .
-        $this->sales_order_payment . " sp
+            $this->sales_order . " s, " .
+            $this->sales_order_payment . " sp
                 WHERE
                     s.bleumipay_transient_error = 'yes' AND
                     ((s.bleumipay_processing_completed = 'no') OR (s.bleumipay_processing_completed IS NULL)) AND
@@ -88,10 +122,15 @@ class DBHandler
 
     /**
      * Get all orders with status = $orderStatus
-     * Usage: Orders cron to get all orders that are in 'awaiting_confirmation' status to check if
+     * Usage: Orders cron to get all orders that are in
+     * 'awaiting_confirmation' status to check if
      * they are still awaiting even after 24 hours.
+     *
+     * @param $status Filter criteria - status value
+     * @param $type   The field to filter on. ('bleumipay_payment_status', 'status')
+     *
+     * @return object
      */
-
     public function getOrdersForStatus($status, $type)
     {
 
@@ -99,8 +138,8 @@ class DBHandler
                 SELECT
                     s.*
                 FROM " .
-        $this->sales_order . " s, " .
-        $this->sales_order_payment . " sp
+            $this->sales_order . " s, " .
+            $this->sales_order_payment . " sp
                 WHERE
                     s.entity_id = sp.parent_id AND
                     s.$type = '" . $status . "' AND
@@ -122,8 +161,11 @@ class DBHandler
     /**
      * Get all orders that are modified after $start_at
      * Usage: The list of orders processed by Orders cron
+     *
+     * @param $start_at Filter criteria - orders that are modified after this value will be returned
+     *
+     * @return object
      */
-
     public function getUpdatedOrders($start_at)
     {
 
@@ -131,8 +173,8 @@ class DBHandler
                 SELECT
                     s.*
                 FROM " .
-        $this->sales_order . " s, " .
-        $this->sales_order_payment . " sp
+            $this->sales_order . " s, " .
+            $this->sales_order_payment . " sp
                 WHERE
                     s.entity_id = sp.parent_id AND
                     ((s.bleumipay_processing_completed = 'no') OR (s.bleumipay_processing_completed IS NULL)) AND
@@ -154,31 +196,63 @@ class DBHandler
     }
 
     /**
-     * Helper function - creates and executes the UPDATE statement for a string columns of any table
+     * Creates and executes the UPDATE statement
+     * for a string columns of any table
+     *
+     * @param $table_name   Table name
+     * @param $entity_id    ID of the Order to update
+     * @param $column_name  Column name
+     * @param $column_value Value
+     *
+     * @return object
      */
-
     public function updateStringData($table_name, $entity_id, $column_name, $column_value = null)
     {
         $table_name = $this->resource->getTableName($table_name);
         if (!empty($entity_id)) {
-            $sql = $sql = "UPDATE " . $table_name . " SET " . $column_name . " = null WHERE entity_id = " . $entity_id;
+            $sql = "UPDATE " . $table_name . " SET " . $column_name . " = null WHERE entity_id = " . $entity_id;
             if (!empty($column_value)) {
                 $sql = "UPDATE " . $table_name . " SET " . $column_name . " = '" . $column_value . "'  WHERE entity_id = " . $entity_id;
-            } 
+            }
             $this->connection->query($sql);
         }
     }
 
+    /**
+     * Update Order Meta Data
+     *
+     * @param $entity_id    ID of the Order to update
+     * @param $column_name  Column Name
+     * @param $column_value Value
+     * 
+     * @return void
+     */
     public function updateMetaData($entity_id, $column_name, $column_value)
     {
         return $this->updateStringData('sales_order', $entity_id, $column_name, $column_value);
     }
 
+    /**
+     * Delete Order Meta Data
+     *
+     * @param $entity_id   ID of the Order to delete
+     * @param $column_name Column Name
+     *
+     * @return void
+     */
     public function deleteMetaData($entity_id, $column_name)
     {
         return $this->updateStringData('sales_order', $entity_id, $column_name);
     }
 
+    /**
+     * Get Order Meta Data
+     *
+     * @param $entity_id   ID of the Order to get
+     * @param $column_name Column Name
+     *
+     * @return void
+     */
     public function getMeta($entity_id, $column_name)
     {
         try {
@@ -192,6 +266,14 @@ class DBHandler
         }
     }
 
+    /**
+     * Update Cron Execution time
+     *
+     * @param $name Name of the column to update in bleumi_pay_cron table
+     * @param $time value (UNIX date/time)
+     *
+     * @return void
+     */
     public function updateRuntime($name, $time)
     {
         $sql = "UPDATE " . $this->bleumi_pay_cron . " SET " . $name . "='" . $time . "'  WHERE id = 1 ";
@@ -200,12 +282,14 @@ class DBHandler
 
     /**
      * Get the previous execution time for the given cron job
+     *
+     * @param $name Name of column to fetch value for
+     *
+     * @return void
      */
-
     public function getCronTime($name)
     {
         $result = $this->connection->fetchAll("SELECT * FROM bleumi_pay_cron WHERE id = 1");
         return $result[0][$name];
     }
-
 }

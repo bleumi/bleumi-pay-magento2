@@ -1,39 +1,60 @@
 <?php
 
-/*****************************************
- *
- * Bleumi Pay Orders CRON ("Orders Updater") functions
- *
- * Updates WooCommerce Order Statuses changes to Bleumi Pay
- *
- * Any status updates in orders is posted to Bleumi Pay by these function
- *
- *
- ******************************************/
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
+ * Order Cron
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Cron;
+namespace Bleumi\BleumiPay\Cron;
 
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
-use \BleumiPay\PaymentGateway\Cron\APIHandler;
-use \BleumiPay\PaymentGateway\Cron\DBHandler;
+use \Bleumi\BleumiPay\Cron\APIHandler;
+use \Bleumi\BleumiPay\Cron\DBHandler;
+
+/**
+ * Order Cron
+ * 
+ * ("Orders Updater") functions
+ * Actions Order Statuses changes to Bleumi Pay
+ * Any status updates in orders is posted to Bleumi Pay by these function
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
+
 
 class Order
 {
     protected $logger;
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    private $scopeConfig;
+    protected $scopeConfig;
     protected $store;
     protected $api;
     protected $tokens;
     protected $error_handler;
 
+    /**
+     * Constructor
+     *
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig scope Config.
+     * @param LoggerInterface                                    $logger      Log writer
+     *
+     * @return void
+     */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         LoggerInterface $logger
@@ -48,11 +69,10 @@ class Order
     }
 
     /**
+     * Orders cron main function
      *
-     * Orders cron
-     *
+     * @return void
      */
-
     public function execute()
     {
         $data_source = 'orders-cron';
@@ -81,13 +101,20 @@ class Order
         $this->verifyCompleteRefund($data_source);
     }
 
+    /**
+     * Sync Order
+     *
+     * @param object $order       Order to process
+     * @param string $data_source Cron job identifier
+     *
+     * @return void
+     */
     public function syncOrder($order, $data_source)
     {
         $entity_id = null;
         try {
             $entity_id = $order['entity_id'];
         } catch (\Exception $e) {
-
         }
         if (empty($entity_id)) {
             return;
@@ -130,7 +157,7 @@ class Order
         $currentTime = strtotime(date("Y-m-d H:i:s")); //Server Unix time
         $order_modified_date = strtotime($order['updated_at']);
         $minutes = Utils::getMinutesDiff($currentTime, $order_modified_date);
-        if ($minutes < $this->store::cron_collision_safe_minutes) {
+        if ($minutes < $this->store::CRON_COLLISION_SAFE_MINUTES) {
             // Skip orders-cron update if order was updated by payments-cron recently.
             if (($data_source === 'orders-cron') && ($prev_data_source === 'payments-cron')) {
                 $msg = 'Skipping syncOrder at this time as payments-cron updated this order recently, will be re-tried again';
@@ -141,7 +168,7 @@ class Order
         }
 
         $order_status = $order["status"];
-        $result = $this->api->getPaymentTokenBalance(null, $entity_id);
+        $result = $this->api->getPaymentTokenBalance($entity_id, null);
         if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
             //If balance of more than 1 token is found, log transient error & return
             if ($result[0]['code'] == -2) {
@@ -163,7 +190,6 @@ class Order
         try {
             $amount = (float) $payment_info['token_balances'][0]['balance'];
         } catch (\Exception $e) {
-
         }
 
         if ($amount == 0) {
@@ -173,31 +199,37 @@ class Order
         }
 
         switch ($order_status) {
-            case "complete":
-                $msg = 'syncOrder:' . $entity_id . '  settling payment.';
-                $this->logger->info('bleumi_pay: ' . $data_source . ' :' . $msg);
-                $this->settleOrder($order, $payment_info, $data_source);
-                break;
-            case "canceled":
-                $msg = 'syncOrder:  ' . $data_source . ' :' . $entity_id . '  refunding payment.';
-                $this->logger->info('bleumi_pay: ' . $msg);
-                $this->refundOrder($order, $payment_info, $data_source);
-                break;
-            default:
-                $this->logger->info('bleumi_pay:  ' . $data_source . ' : syncOrder: ' . $entity_id . ' switch case : unhandled order status: ' . $order_status);
-                break;
+        case "complete":
+            $msg = 'syncOrder:' . $entity_id . '  settling payment.';
+            $this->logger->info('bleumi_pay: ' . $data_source . ' :' . $msg);
+            $this->settleOrder($order, $payment_info, $data_source);
+            break;
+        case "canceled":
+            $msg = 'syncOrder:  ' . $data_source . ' :' . $entity_id . '  refunding payment.';
+            $this->logger->info('bleumi_pay: ' . $msg);
+            $this->refundOrder($order, $payment_info, $data_source);
+            break;
+        default:
+            $this->logger->info('bleumi_pay:  ' . $data_source . ' : syncOrder: ' . $entity_id . ' switch case : unhandled order status: ' . $order_status);
+            break;
         }
     }
 
     /**
      * Settle orders and set to settle_in_progress Bleumi Pay status
+     *
+     * @param $order        Order to settle payment
+     * @param $payment_info Payment Information
+     * @param $data_source  Cron job identifier
+     *
+     * @return void
      */
     public function settleOrder($order, $payment_info, $data_source)
     {
         $msg = '';
         $entity_id = $order['entity_id'];
         usleep(300000); // rate limit delay.
-        $result = $this->api->settle_payment($payment_info, $order);
+        $result = $this->api->settlePayment($payment_info, $order);
         if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
             $msg = $result[0]['message'];
             $this->error_handler->logTransientException($entity_id, 'syncOrder', 'E103', $msg);
@@ -211,20 +243,26 @@ class Order
                 $this->store->updateMetaData($entity_id, 'bleumipay_data_source', $data_source);
                 $this->error_handler->clearTransientError($entity_id);
             }
-            $msg = 'settle_payment invoked, tx-id is: ' . $operation['txid'];
+            $msg = 'settlePayment invoked, tx-id is: ' . $operation['txid'];
         }
         $this->logger->info('bleumi_pay: ' . $data_source . ' : settleOrder :' . $entity_id . ' ' . $msg);
     }
 
     /**
      * Refund Orders and set to refund_in_progress Bleumi Pay status
+     *
+     * @param $order        Order to refund payment
+     * @param $payment_info Payment Information
+     * @param $data_source  Cron job identifier
+     *
+     * @return void
      */
     public function refundOrder($order, $payment_info, $data_source)
     {
         $msg = '';
         usleep(300000); // rate limit delay.
         $entity_id = $order['entity_id'];
-        $result = $this->api->refund_payment($payment_info, $entity_id);
+        $result = $this->api->refundPayment($payment_info, $entity_id);
         if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
             $msg = $result[0]['message'];
             $this->error_handler->logTransientException($entity_id, 'syncOrder', 'E205', $msg);
@@ -235,7 +273,7 @@ class Order
                 $this->store->updateMetaData($entity_id, 'bleumipay_payment_status', 'refund_in_progress');
                 $this->store->updateMetaData($entity_id, 'bleumipay_processing_completed', 'no');
                 $this->error_handler->clearTransientError($entity_id);
-                $msg = ' refund_payment invoked, tx-id is: ' . $operation['txid'];
+                $msg = ' refundPayment invoked, tx-id is: ' . $operation['txid'];
             }
         }
         $this->logger->info('bleumi_pay: ' . $data_source . ' : refundOrder : ' . $entity_id . $msg);
@@ -243,7 +281,12 @@ class Order
     }
 
     /**
-     * Find Orders which are in refund_in_progress Bleumi Pay status
+     * Find Orders which are in refund_in_progress
+     * Bleumi Pay status
+     *
+     * @param $data_source Cron job identifier
+     *
+     * @return void
      */
     public function verifyRefundOperationStatuses($data_source)
     {
@@ -255,7 +298,11 @@ class Order
     }
 
     /**
-     * Fail the orders that are not confirmed even after cut-off time. (1 hour)
+     * Fail the orders that are not confirmed even after cut-off time. (24 hour)
+     *
+     * @param $data_source Cron job identifier
+     *
+     * @return void
      */
     public function failUnconfirmedPaymentOrders($data_source)
     {
@@ -265,7 +312,7 @@ class Order
             $currentTime = strtotime(date("Y-m-d H:i:s")); //Server UNIX time
             $order_updated_date = strtotime($order['updated_at']);
             $minutes = Utils::getMinutesDiff($currentTime, $order_updated_date);
-            if ($minutes > $this->store::await_payment_minutes) {
+            if ($minutes > $this->store::AWAIT_PAYMENT_MINUTES) {
                 $msg = 'Payment confirmation not received before cut-off time, elapsed minutes: ' . round($minutes, 2);
                 $this->logger->info('failUnconfirmedPaymentOrders: ' . $entity_id . $msg);
                 Utils::failThisOrder($entity_id);
@@ -275,19 +322,22 @@ class Order
 
     /**
      * Verify that the refund is complete
+     *
+     * @param $data_source Cron job identifier
+     *
+     * @return void
      */
     public function verifyCompleteRefund($data_source)
     {
         $orders = $this->store->getOrdersForStatus('refunded', 'bleumipay_payment_status');
         foreach ($orders as $order) {
             $entity_id = $order['entity_id'];
-            $result = $this->api->getPaymentTokenBalance(null, $entity_id);
+            $result = $this->api->getPaymentTokenBalance($entity_id, null);
             $payment_info = $result[1];
             $token_balances = array();
             try {
                 $token_balances = $payment_info['token_balances'];
             } catch (\Exception $e) {
-
             }
 
             $token_balances_modified = array();
@@ -299,13 +349,12 @@ class Order
             }
             $next_token = '';
             do {
-                $ops_result = $this->api->list_payment_operations($entity_id);
+                $ops_result = $this->api->listPaymentOperations($entity_id);
                 $operations = $ops_result[1]['results'];
                 $next_token = null;
                 try {
                     $next_token = $operations['next_token'];
                 } catch (\Exception $e) {
-
                 }
 
                 if (is_null($next_token)) {
@@ -356,13 +405,15 @@ class Order
     /**
      * Find Orders which are in bp_payment_status = settle_in_progress
      * and check transaction status
+     *
+     * @param $data_source Cron job identifier
+     *
+     * @return void
      */
-
     public function verifySettleOperationStatuses($data_source)
     {
         $orders = $this->store->getOrdersForStatus('settle_in_progress', 'bleumipay_payment_status');
         $operation = "settle";
         $this->api->verifyOperationCompletion($orders, $operation, $data_source);
     }
-
 }

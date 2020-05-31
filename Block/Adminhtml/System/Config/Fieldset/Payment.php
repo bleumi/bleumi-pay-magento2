@@ -1,28 +1,47 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Payment
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Block\Adminhtml\System\Config\Fieldset;
+namespace Bleumi\BleumiPay\Block\Adminhtml\System\Config\Fieldset;
 
 /**
+ * Payment
+ *
  * Fieldset renderer for Bleumi Pay
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
+
 class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
-    /**
-     * @var \Magento\Config\Model\Config
-     */
     protected $_backendConfig;
 
     /**
-     * @param \Magento\Backend\Block\Context $context
-     * @param \Magento\Backend\Model\Auth\Session $authSession
-     * @param \Magento\Framework\View\Helper\Js $jsHelper
-     * @param \Magento\Config\Model\Config $backendConfig
-     * @param array $data
+     * Class constructor
+     *
+     * @param \Magento\Backend\Block\Context      $context       Parameter .
+     * @param \Magento\Backend\Model\Auth\Session $authSession   Parameter .
+     * @param \Magento\Framework\View\Helper\Js   $jsHelper      Parameter .
+     * @param \Magento\Config\Model\Config        $backendConfig Parameter .
+     * @param array                               $data          Parameter .
+     *
+     * @return void
      */
     public function __construct(
         \Magento\Backend\Block\Context $context,
@@ -38,7 +57,8 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * Add custom css class
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element a
+     *
      * @return string
      */
     protected function _getFrontendClass($element)
@@ -50,7 +70,8 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * Check whether current payment method is enabled
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Parameter description. 
+     *
      * @return bool
      */
     protected function _isPaymentEnabled($element)
@@ -74,8 +95,10 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * Return header title part of html for payment solution
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Parameter description.
+     *
      * @return string
+     *
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function _getHeaderTitleHtml($element)
@@ -131,8 +154,10 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * Return header comment part of html for payment solution
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Parameter description.
+     *
      * @return string
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getHeaderCommentHtml($element)
@@ -143,8 +168,10 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     /**
      * Get collapsed state on-load
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Parameter Description
+     *
      * @return false
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _isCollapseState($element)
@@ -153,8 +180,12 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     }
 
     /**
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * Get Extra JS
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Parameter Description
+     *
      * @return string
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _getExtraJs($element)

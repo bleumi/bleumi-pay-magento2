@@ -1,21 +1,47 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
- **/
+ * InstallSchema
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
 
-namespace BleumiPay\PaymentGateway\Setup;
+namespace Bleumi\BleumiPay\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
+/**
+ * InstallSchema 
+ *
+ * PHP version 5
+ *
+ * @category  Class
+ * @package   BleumiPay\Setup
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
+
 class InstallSchema implements InstallSchemaInterface
 {
     /**
-     * {@inheritdoc}
+     * InstallSchema install
+     *
+     * @param SchemaSetupInterface   $setup   Setup
+     * @param ModuleContextInterface $context Context
+     * 
+     * @return void
      */
     public function install(
         SchemaSetupInterface $setup,
@@ -62,7 +88,6 @@ class InstallSchema implements InstallSchemaInterface
                     ->setComment('Cron job parameters (Bleumi Pay)');
 
                 $connection->createTable($table);
-
             }
 
             $this->addColumnToSales($connection, $setup, 'bleumipay_addresses', Table::TYPE_TEXT, 0, 'Wallet Addresses (Bleumi Pay)');
@@ -78,7 +103,6 @@ class InstallSchema implements InstallSchemaInterface
             $this->addColumnToSales($connection, $setup, 'bleumipay_hard_error_code', Table::TYPE_TEXT, 20, 'Hard Error Code (Bleumi Pay)');
             $this->addColumnToSales($connection, $setup, 'bleumipay_hard_error_msg', Table::TYPE_TEXT, 256, 'Hard Error Message (Bleumi Pay)');
             $this->addColumnToSales($connection, $setup, 'bleumipay_processing_completed', Table::TYPE_TEXT, 20, 'Processing completed Indicator (Bleumi Pay)');
-
         } catch (\Throwable $th) {
             // echo "unable to create table";
             // print_r($th);
@@ -87,23 +111,30 @@ class InstallSchema implements InstallSchemaInterface
         $setup->endSetup();
     }
 
-    /*
-     * Add a column to the sales_order table
-     *
-     */
-    private function addColumnToSales($connection, $setup, $columnName, $dataType, $length, $comment)
+     /**
+      *  Add a column to the sales_order table
+      *
+      * @param $connection Database Connection
+      * @param $setup      Setup
+      * @param $columnName Column Name
+      * @param $dataType   Data Type
+      * @param $length     Length
+      * @param $comment    Comment
+      *
+      * @return string
+      */
+    protected function addColumnToSales($connection, $setup, $columnName, $dataType, $length, $comment)
     {
         if ($connection->tableColumnExists('sales_order', $columnName) === false) {
-            $connection
-                ->addColumn(
-                    $setup->getTable('sales_order'),
-                    $columnName,
-                    [
-                        'type' => $dataType,
-                        'length' => $length,
-                        'comment' => $comment,
-                    ]
-                );
+            $connection->addColumn(
+                $setup->getTable('sales_order'),
+                $columnName,
+                [
+                    'type' => $dataType,
+                    'length' => $length,
+                    'comment' => $comment,
+                ]
+            );
         }
     }
 }

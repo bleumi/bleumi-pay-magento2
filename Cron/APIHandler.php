@@ -1,24 +1,53 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * 
+ * APIHandler
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Cron;
+namespace Bleumi\BleumiPay\Cron;
 
 use Psr\Log\LoggerInterface;
 use Magento\Framework\App\ObjectManager;
-use \BleumiPay\PaymentGateway\Cron\ExceptionHandler;
+use \Bleumi\BleumiPay\Cron\ExceptionHandler;
+
+/**
+ * APIHandler 
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
 
 class APIHandler
 {
-    private $logger;
+    protected $logger;
     protected $payment_instance;
     protected $HC_instance;
     protected $error_handler;
     protected $store;
 
+    /**
+     * Constructor
+     *
+     * @param string          $APIKEY API key or token
+     * @param LoggerInterface $logger Log writer.
+     *
+     * @return void
+     */
     public function __construct(
         $APIKEY,
         LoggerInterface $logger
@@ -32,7 +61,12 @@ class APIHandler
     }
 
     /**
-     * Create payment in Bleumi Pay for the given order_id
+     * Create payment in Bleumi Pay for the given order
+     *
+     * @param $order Store Order object
+     * @param $urls  Object with success and cancel URL links
+     *
+     * @return object
      */
     public function create($order, $urls)
     {
@@ -48,7 +82,6 @@ class APIHandler
             $result = $this->HC_instance->createCheckoutUrl($createReq);
 
             $this->logger->info("bleumi_pay: Payment request created for " . $id);
-
             return $result;
         } catch (\Exception $e) {
             $this->logger->critical('bleumi_pay: Payement request creation failed', ['exception' => $e->getMessage()]);
@@ -57,6 +90,10 @@ class APIHandler
 
     /**
      * Validate Payment Completion Parameters.
+     *
+     * @param $params The hmac parameters returned from hosted checkout page
+     *
+     * @return bool
      */
     public function validateUrl($params)
     {
@@ -77,8 +114,13 @@ class APIHandler
 
     /**
      * Retrieves the payment details for the order_id from Bleumi Pay
+     *
+     * @param $updated_after_time Filter criteria to fetch payments after this UNIX timestamp 
+     * @param $next_token         The token to get next page of results
+     *
+     * @return array
      */
-    public function get_payments($updated_after_time, $next_token)
+    public function getPayments($updated_after_time, $next_token)
     {
         $result = null;
         $errorStatus = array();
@@ -89,7 +131,7 @@ class APIHandler
         try {
             $result = $this->payment_instance->listPayments($next_token, $sort_by, $sort_order, $start_at);
         } catch (\Exception $e) {
-            $msg = 'get_payments: failed, response: ' . $e->getMessage();
+            $msg = 'getPayments: failed, response: ' . $e->getMessage();
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();
             }
@@ -102,15 +144,19 @@ class APIHandler
 
     /**
      * Retrieves the payment details for the entity_id from Bleumi Pay
+     *
+     * @param $entity_id ID of the Bleumi Pay payment
+     *
+     * @return array
      */
-    public function get_payment($entity_id)
+    public function getPayment($entity_id)
     {
         $result = null;
         $errorStatus = array();
         try {
             $result = $this->payment_instance->getPayment($entity_id);
         } catch (\Exception $e) {
-            $msg = 'get_payment: failed order-id:' . $entity_id;
+            $msg = 'getPayment: failed order-id:' . $entity_id;
             $this->logger->critical('bleumi_pay: ' . $msg);
             $errorStatus['code'] = -1;
             $errorStatus['message'] = $msg;
@@ -119,38 +165,49 @@ class APIHandler
     }
 
     /**
-     * Retrieves the payment operation details for the payment_id, tx_id from Bleumi Pay
+     * Retrieves the payment operation details for the id, tx_id
+     * from Bleumi Pay
+     *
+     * @param $id    ID of the Bleumi Pay payment
+     * @param $tx_id Tranaction ID of the Bleumi Pay payment Operation
+     *
+     * @return array
      */
-    public function get_payment_operation($id, $tx_id)
+    public function getPaymentOperation($id, $tx_id)
     {
         $result = null;
         $errorStatus = array();
         try {
             $result = $this->payment_instance->getPaymentOperation($id, $tx_id);
         } catch (\Exception $e) {
-            $msg = 'get_payment_operation: failed : payment-id: ' . $id . ' tx_id: ' . $tx_id . ' response: ' . $e->getMessage();
+            $msg = 'getPaymentOperation: failed : payment-id: ' . $id . ' tx_id: ' . $tx_id . ' response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();
             }
             $errorStatus['message'] = $msg;
             $this->logger->critical('bleumi_pay: ' . $msg);
-            $this->error_handler->logException($id, 'get_payment_operation', $e->getCode(), $msg);
+            $this->error_handler->logException($id, 'getPaymentOperation', $e->getCode(), $msg);
         }
         return array($errorStatus, $result);
     }
 
     /**
      * List of Payment Operations
+     *
+     * @param $id         ID of the Bleumi Pay payment
+     * @param $next_token The token to get next page of results
+     *
+     * @return array
      */
-    public function list_payment_operations($id, $next_token = null)
+    public function listPaymentOperations($id, $next_token = null)
     {
         $result = null;
         $errorStatus = array();
         try {
             $result = $this->payment_instance->listPaymentOperations($id, $next_token);
         } catch (\Exception $e) {
-            $msg = 'list_payment_operations: failed : ' . $id . '; response: ' . $e->getMessage();
+            $msg = 'listPaymentOperations: failed : ' . $id . '; response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();
@@ -162,9 +219,13 @@ class APIHandler
     }
 
     /**
-     * List Tokens
+     * List the tokens the merchant has configured for the given currency
+     *
+     * @param $storeCurrency The store currency code, used to filter the tokens
+     *
+     * @return array
      */
-    public function list_tokens($storeCurrency)
+    public function listTokens($storeCurrency)
     {
         $result = array();
         $errorStatus = array();
@@ -174,9 +235,9 @@ class APIHandler
                 if ($item['currency'] === $storeCurrency) {
                     array_push($result, $item);
                 }
-            }    
+            }
         } catch (\Exception $e) {
-            $msg = 'list_tokens: failed for currency: ' . $storeCurrency . '; response: ' . $e->getMessage();
+            $msg = 'listTokens: failed for currency: ' . $storeCurrency . '; response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();
@@ -188,10 +249,14 @@ class APIHandler
     }
 
     /**
-     * Settle payment in Bleumi Pay for the given order_id
+     * Settle payment in Bleumi Pay for the given order
+     *
+     * @param $payment_info Payment information object
+     * @param $order        Store Order object
+     *
+     * @return array
      */
-
-    public function settle_payment($payment_info, $order)
+    public function settlePayment($payment_info, $order)
     {
         $result = null;
         $errorStatus = array();
@@ -207,24 +272,27 @@ class APIHandler
             $entity_id = $order['entity_id'];
             $this->error_handler->clearTransientError($entity_id);
         } catch (\Exception $e) {
-            $this->logger->info('bleumi_pay: settle_payment --Exception--' . $e->getMessage());
-            $msg = 'settle_payment: failed : order-id :' . $id . '; response: ' . $e->getMessage();
+            $this->logger->info('bleumi_pay: settlePayment --Exception--' . $e->getMessage());
+            $msg = 'settlePayment: failed : order-id :' . $id . '; response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();
             }
             $errorStatus['message'] = $msg;
             $this->logger->critical('bleumi_pay:  ' . $msg);
-
         }
         return array($errorStatus, $result);
     }
 
     /**
-     * Refund payment in Bleumi Pay for the given order_id
+     * Refund payment in Bleumi Pay for the given order
+     *
+     * @param $payment_info Payment information object
+     * @param $entity_id    Order ID
+     *
+     * @return array
      */
-
-    public function refund_payment($payment_info, $entity_id)
+    public function refundPayment($payment_info, $entity_id)
     {
         $result = null;
         $errorStatus = array();
@@ -239,7 +307,7 @@ class APIHandler
             }
             $this->error_handler->clearTransientError($entity_id);
         } catch (\Exception $e) {
-            $msg = 'refund_payment: failed : order-id :' . $id . '; response: ' . $e->getMessage();
+            $msg = 'refundPayment: failed : order-id :' . $id . '; response: ' . $e->getMessage();
             $errorStatus['code'] = -1;
             if ($e->getResponseBody() !== null) {
                 $msg = $msg . $e->getResponseBody();
@@ -252,10 +320,11 @@ class APIHandler
 
     /**
      * To ignore ALGO balance when Algorand ASA payment is made
-     * Input: Array of token balances
-     * Output: A new array which does not contain the ALGO token balance if any Algorand ASA token balance is found
+     *
+     * @param array $token_balances Array of token balances
+     *
+     * @return array    A new array which does not contain the ALGO token balance if any Algorand ASA token balance is found
      */
-
     public function ignoreALGO($token_balances)
     {
         $algo_token_found = false;
@@ -278,35 +347,56 @@ class APIHandler
     }
 
     /**
-     * To check whether payment is made using multiple ERC-20 tokens
-     * It is possible that user could have made payment to the wallet address using a different token
-     * Returns false if balance>0 is found for more than 1 token when network='ethereum', chain=['mainnet', 'goerli']
+     * To check whether payment is made using multiple tokens
+     * It is possible that user could have made payment to
+     * the wallet address using a different token
+     * Output is false
+     *         if balance>0 is found
+     *         for more than 1 token
+     *
+     * @param $payment Payment Object
+     *
+     * @return bool
      */
-
     public function isMultiTokenPayment($payment)
     {
-        $chains = array('mainnet', 'goerli', 'xdai_testnet', 'xdai');
-        $tokenBalances = null;
-        foreach ($chains as $chain) {
-            try {
-                $tokenBalances = $payment['balances']['ethereum'][$chain];
-            } catch (\Exception $e) {
-
+        $networks = array('ethereum', 'algorand', 'rsk');
+        $token_balances = array();
+        $chain_token_balances = null;
+        foreach ($networks as $network) {
+            $chains = array();
+            if ($network === 'ethereum') {
+                $chains = array('mainnet', 'goerli', 'xdai_testnet', 'xdai');
+            } else if ($network === 'algorand') {
+                $chains = array('alg_mainnet', 'alg_testnet');
+            } else if ($network === 'rsk') {
+                $chains = array('rsk', 'rsk_testnet');
             }
-            $this->logger->info('bleumi_pay: isMultiTokenPayment : chainBalance ' . $chain . ' ' . json_encode($tokenBalances));
-            if (!is_null($tokenBalances)) {
-                $count = 0;
-                foreach ($tokenBalances as $tokenBalance) {
-                    $balance = $tokenBalance['balance'];
-                    if ($balance > 0) {
-                        $count = $count + 1;
+            foreach ($chains as $chain) {
+                try {
+                    $chain_token_balances = $payment['balances'][$network][$chain];
+                } catch (\Exception $e) {
+                }
+                if (!is_null($chain_token_balances)) {
+                    foreach ($chain_token_balances as $addr => $token_balance) {
+                        $balance = (float) $token_balance['balance'];
+                        if ($balance > 0) {
+                            $item = array();
+                            $item['network'] = $network;
+                            $item['chain'] = $chain;
+                            $item['addr'] = $addr;
+                            $item['balance'] = $token_balance['balance'];
+                            $item['token_decimals'] = $token_balance['token_decimals'];
+                            $item['blockNum'] = $token_balance['blockNum'];
+                            $item['token_balance'] = $token_balance['token_balance'];
+                            array_push($token_balances, $item);
+                        }
                     }
                 }
-                $this->logger->info('bleumi_pay: isMultiTokenPayment: tokenBalances count ' . count($tokenBalances));
-                return ($count > 1);
             }
         }
-        return false;
+        $ret_token_balances = $this->ignoreALGO($token_balances);
+        return (count($ret_token_balances) > 1);
     }
 
     /**
@@ -337,22 +427,25 @@ class APIHandler
      *    "createdAt": 1577086517,
      *    "updatedAt": 1577086771
      * }
-     * @return object
+     *
+     * @param $entity_id Order ID
+     * @param $payment   Payment Object
+     *
+     * @return array
      */
-    public function getPaymentTokenBalance($payment = null, $entity_id)
+    public function getPaymentTokenBalance($entity_id, $payment = null)
     {
-
         $chain = '';
         $addr = '';
         $token_balances = array();
         $payment_info = array();
         $errorStatus = array();
 
-        //Call get_payment API to set $payment if found null.
+        //Call getPayment API to set $payment if found null.
         if (is_null($payment)) {
-            $result = $this->get_payment($entity_id);
+            $result = $this->getPayment($entity_id);
             if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
-                $this->logger->critical('bleumi_pay: getPaymentTokenBalance: order-id :' . $entity_id . ' get_payment api failed : ' . $result[0]['message']);
+                $this->logger->critical('bleumi_pay: getPaymentTokenBalance: order-id :' . $entity_id . ' getPayment api failed : ' . $result[0]['message']);
                 $errorStatus = array(
                     'code' => -1,
                     'message' => 'get payment details failed ',
@@ -385,9 +478,9 @@ class APIHandler
         }
         $order = ObjectManager::getInstance()->create('Magento\Sales\Model\Order')->load($entity_id);
         $storeCurrency = $order->getStoreCurrencyCode();
-        $result = $this->list_tokens($storeCurrency);
+        $result = $this->listTokens($storeCurrency);
         if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
-            $this->logger->critical('bleumi_pay: getPaymentTokenBalance: order-id :' . $entity_id . ' list_tokens api failed : ' . $result[0]['message']);
+            $this->logger->critical('bleumi_pay: getPaymentTokenBalance: order-id :' . $entity_id . ' listTokens api failed : ' . $result[0]['message']);
             return array($result[0], $payment_info);
         }
         $tokens = $result[1];
@@ -446,6 +539,12 @@ class APIHandler
 
     /**
      * Verify Payment operation completion status.
+     *
+     * @param array  $orders      Array of Orders
+     * @param string $operation   settle/refund
+     * @param string $data_source The cron job invoking this function
+     *
+     * @return void
      */
     public function verifyOperationCompletion($orders, $operation, $data_source)
     {
@@ -467,11 +566,13 @@ class APIHandler
                 $this->logger->critical('bleumi_pay: verifyOperationCompletion: order-id :' . $entity_id . ' tx-id is not set.');
                 continue;
             }
-            //For such orders perform get operation & check whether status has become 'true'
-            $result = $this->get_payment_operation($entity_id, $tx_id);
+            //For such orders perform get operation &
+            //check whether status has become 'true'
+
+            $result = $this->getPaymentOperation($entity_id, $tx_id);
             if (isset($result[0]['code']) && !is_null($result[0]['code'])) {
                 $msg = $result[0]['message'];
-                $this->logger->critical('bleumi_pay: verifyOperationCompletion: order-id :' . $entity_id . ' get_payment_operation api request failed: ' . $msg);
+                $this->logger->critical('bleumi_pay: verifyOperationCompletion: order-id :' . $entity_id . ' getPaymentOperation api request failed: ' . $msg);
                 continue;
             }
             $status = $result[1]['status'];
@@ -501,5 +602,4 @@ class APIHandler
             }
         }
     }
-
 }

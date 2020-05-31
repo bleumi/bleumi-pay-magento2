@@ -1,50 +1,59 @@
 <?php
 
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Index
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 
-namespace BleumiPay\PaymentGateway\Controller\Start;
+namespace Bleumi\BleumiPay\Controller\Start;
 
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\Exception\LocalizedException;
-use BleumiPay\PaymentGateway\Cron\APIHandler;
+use Bleumi\BleumiPay\Cron\APIHandler;
+
+/**
+ * Index
+ *
+ * PHP version 5
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
+ */
 
 class Index extends \Magento\Framework\App\Action\Action
 {
-    /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    private $checkoutSession;
-
-    /**
-     * @var \Magento\Framework\Controller\Result\JsonFactory
-     */
-    private $resultJsonFactory;
-
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    private $scopeConfig;
-
+    protected $checkoutSession;
+    protected $resultJsonFactory;
+    protected $logger;
+    protected $scopeConfig;
     protected $api;
 
     /**
-     * Index constructor.
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Psr\Log\LoggerInterface $logger
+     * Constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context              $context           Context.
+     * @param \Magento\Checkout\Model\Session                    $checkoutSession   Session.
+     * @param \Magento\Framework\Controller\Result\JsonFactory   $resultJsonFactory Result JSON Factory.
+     * @param \Psr\Log\LoggerInterface                           $logger            Log write.
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig       Scope Configuration.
+     *
+     * @return void
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session\Proxy $checkoutSession,
+        \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -60,6 +69,8 @@ class Index extends \Magento\Framework\App\Action\Action
 
     /**
      * Start checkout by requesting checkout code and dispatching customer to Bleumi Pay.
+
+     * @return object
      */
     public function execute()
     {

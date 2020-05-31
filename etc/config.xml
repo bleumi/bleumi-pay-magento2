@@ -1,14 +1,23 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
+ * Config
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
             <bleumipaymethod>
-                <model>BleumiPay\PaymentGateway\Model\BleumiPayMethod</model>
+                <model>Bleumi\BleumiPay\Model\BleumiPayMethod</model>
                 <title>Bleumi Pay Digital Currency Payments for Magento 2</title>
                 <active>0</active>
                 <order_status>pending</order_status>

@@ -1,13 +1,21 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2020 Bleumi Pay. All rights reserved.
- * See COPYING.txt for license details.
+ * Checkout Index File Doc Comment
+ *
+ * XML version 1
+ *
+ * @category  Bleumi
+ * @package   Bleumi_BleumiPay
+ * @author    Bleumi Pay <support@bleumi.com>
+ * @copyright 2020 Bleumi, Inc. All rights reserved.
+ * @license   MIT; see LICENSE
+ * @link      http://pay.bleumi.com
  */
 -->
 <page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 	<head>
-		<css src="BleumiPay_PaymentGateway::css/bleumipaymethod.css"/>
+		<css src="Bleumi_BleumiPay::css/bleumipaymethod.css"/>
 	</head>
     <body>
         <referenceBlock name="checkout.root">
@@ -26,7 +34,7 @@
                                                             <item name="children" xsi:type="array">
                                                             <!-- merge payment method renders here -->
                                                                 <item name="bleumipaymethod" xsi:type="array">
-                                                                    <item name="component" xsi:type="string">BleumiPay_PaymentGateway/js/view/payment/bleumipaymethod</item>
+                                                                    <item name="component" xsi:type="string">Bleumi_BleumiPay/js/view/payment/bleumipaymethod</item>
                                                                     <item name="methods" xsi:type="array">                                                                  
 																		 <item name="bleumipaymethod" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">false</item>
