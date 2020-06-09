@@ -14,8 +14,6 @@ With this extension, customers can make stablecoin payments (cryptocurrencies de
 
 ## Benefits of Stablecoin Payments
 
-One Integration for major Blockchain Networks — Algorand, Ethereum, xDAI
-
 * Quick - Get paid within seconds.
 * Secure - By blockchain technology.
 * Global - Payments are borderless.
@@ -29,17 +27,30 @@ One Integration for major Blockchain Networks — Algorand, Ethereum, xDAI
 Tap into 7Bn+ fiat money circulating in stablecoins — Bleumi Pay supports any stablecoin on supported blockchain networks.
 
 Recommended USD Stablecoins
+
+ERC-20
+
 * Tether USD (USDT)
 * USD Coin (USDC)
 * Paxos (PAX)
 * Binance USD (BUSD)
 * TrueUSD (TUSD)
 * Multi-collateral DAI (DAI)
-* USDQ (USDQ)
-* Single Collateral DAI (DAI)
+* USDK (USDK)
 * Gemini Dollar (GUSD)
+* sUSD (SUSD)
+* USDQ (USDQ)
+* StableUSD (USDS)
+
+RSK ERC-20
+
+* Dollar on Chain (DOC)
+* RIF Dollar on Chain (RDOC)
 
 Recommended other fiat money Stablecoins
+
+ERC-20
+
 * Stasis EURO (EURS)
 * CryptoFranc (XCHF)
 * 1SG (1SG)
