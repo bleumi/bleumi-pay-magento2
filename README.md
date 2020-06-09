@@ -22,7 +22,7 @@ With this extension, customers can make stablecoin payments (cryptocurrencies de
 
 ## Supported Stablecoins
 
-One Integration for major Blockchain Networks — Algorand, Ethereum, xDAI
+One Integration for major Blockchain Networks — Algorand, Ethereum, rsk, xDAI
 
 Tap into 7Bn+ fiat money circulating in stablecoins — Bleumi Pay supports any stablecoin on supported blockchain networks.
 
