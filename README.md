@@ -6,7 +6,7 @@
 
 [Bleumi Pay](https://pay.bleumi.com) is an all-in-one global digital currency payment platform. Our platform enables businesses to Accept Digital Currency Payments and Send Digital Currency Payouts including Microtransactions.
 
-With this extension, customers can make stablecoin payments (cryptocurrencies designed to mimic the value of fiat money like the dollar or the euro.) in your Magento 2 Store.
+With this extension, customers can make stablecoin payments (cryptocurrencies designed to mimic the value of fiat money like the dollar or the euro) in your Magento 2 Store.
 
 ## Demo Video
 
@@ -75,13 +75,15 @@ If you want to know if Bleumi Pay supports your system or if you face any integr
 
 Step 1: Configure your Bleumi Pay Account:
 
-* Create API Key
-* Setup Gas Accounts
 * Setup Hosted Checkout
+* Configure Gas Accounts
+* Create API Key
 
-Step 2: Install & Configure Bleumi Pay Magento 2 Plugin on your Magento 2 Store.
+Step 2: Install Bleumi Pay Extension in Your Magento 2 Store
 
-Please refer to the [Bleumi Pay Magento 2 Installation Guide](BP_Magento2_Plugin.pdf) for complete details.
+Step 3: Configure Bleumi Pay Extension in Your Magento 2 Store
+
+Please refer to the [Bleumi Pay - Installation Guide for Magento 2](Bleumi%20Pay%20-%20Installation%20Guide%20for%20Magento%202.pdf) for complete details.
 
 ## License
 
